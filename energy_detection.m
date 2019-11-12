@@ -2,7 +2,7 @@ dig_signal = 1;
 Pfa = 0.2;
 N = 500;
 snr_dB = -9;
-fprintf(detection(dig_signal, Pfa, N, snr_dB));
+disp(detection(dig_signal, Pfa, N, snr_dB));
 
 function prob = detection(dig_signal, Pfa, N, snr_dB)
     % generate BPSK signal
