@@ -1,5 +1,5 @@
 dig_signal = 1;
-Pfa = 0.2;
+Pfa = 0.3;
 N = 500;
 snr_dB = -9;
 disp(detection(dig_signal, Pfa, N, snr_dB));
@@ -22,9 +22,10 @@ function prob = detection(dig_signal, Pfa, N, snr_dB)
     w=sqrt(2*Eb/T)*cos(2*pi*fc*t); % carrier waveform
     bpsk_w=bw.*w; % modulated waveform
     snr = 10.^(snr_dB./10);
-    num=0;
+    Pd = zeros(1,N);
  for m = 1: N
-    for i = 1: 10000
+    num=0;
+    for i = 1: N
          %-----AWGN noise with mean 0 and variance -----%
         noise = randn(1,N);
         v = var(noise);
@@ -37,10 +38,11 @@ function prob = detection(dig_signal, Pfa, N, snr_dB)
             num = num+1;
         end
     end
+    Pd(1,m) = num/N;
  end 
-    Pd = num/10000;
+    Pd = sum(Pd)/N;
     Pabs = 1 - Pfa;
-    if dig_signal == 0
+    if dig_signal == 1
         prob = Pd;
     else
         prob = Pabs;
