@@ -1,4 +1,10 @@
-function prob = energy_detection(dig_signal, Pfa, N, snr_dB)
+dig_signal = 1;
+Pfa = 0.2;
+N = 500;
+snr_dB = -9;
+fprintf(detection(dig_signal, Pfa, N, snr_dB));
+
+function prob = detection(dig_signal, Pfa, N, snr_dB)
     % generate BPSK signal
     d= dig_signal;
     b=2*d-1; % Convert unipolar to bipolar
@@ -17,20 +23,21 @@ function prob = energy_detection(dig_signal, Pfa, N, snr_dB)
     bpsk_w=bw.*w; % modulated waveform
     snr = 10.^(snr_dB./10);
     num=0;
+ for m = 1: N
     for i = 1: 10000
          %-----AWGN noise with mean 0 and variance -----%
         noise = randn(1,N);
         v = var(noise);
         s = sqrt(snr)*bpsk_w;
-        y = s + n;
+        y = s + noise;
         energy = abs(y).^2;
         energy_fin =(1/N).*sum(energy);
-        threshold = (qfuncinv(Pfa)./sqrt(N/2))+ 1;
-        if energy_fin >= threshold % Check whether the received energy is greater than threshold, if so, increment Pd (Probability of detection) counter by 1
+        threshold(m) = (qfuncinv(Pfa)./sqrt(N/2))+v;
+        if energy_fin >= threshold(m) % Check whether the received energy is greater than threshold, if so, increment Pd (Probability of detection) counter by 1
             num = num+1;
         end
     end
-   
+ end 
     Pd = num/10000;
     Pabs = 1 - Pfa;
     if dig_signal == 0
